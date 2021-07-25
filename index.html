@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/vue@next"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="todoApp">
+      <input
+        v-model="titleFilter"
+        type="text"
+        placeholder="タスク名で絞り込む"
+      />
+      <label>
+        <input type="radio" v-model="doneFilter" :value="DONE_FILTER.UNDONE" />
+        未完了
+      </label>
+      <label>
+        <input type="radio" v-model="doneFilter" :value="DONE_FILTER.DONE" />
+        完了
+      </label>
+      <label>
+        <input type="radio" v-model="doneFilter" :value="DONE_FILTER.ALL" />
+        すべて
+      </label>
+      <ul>
+        <li v-for="task in filterdTasks" v-bind:key="task.id">
+          <form
+            v-if="isEditingTask(task)"
+            @submit.prevent="editTask"
+            @reset.prevent="hideEditingTaskFields"
+          >
+            <input
+              v-model="editingTaskTitle"
+              type="text"
+              @keyup.esc="hideEditingTaskFields"
+              ref="editingTaskTitle"
+            />
+            <button type="submit">確定</button>
+            <button type="reset">キャンセル</button>
+          </form>
+          <template v-else>
+            <input type="checkbox" v-model="task.done" />
+            {{task.title}}
+            <button
+              :ref="getEditBtnId(task.id)"
+              @click="showEditingTaskFields(task)"
+            >
+              編集
+            </button>
+            <button @click="deleteTask(task.id)">削除</button>
+          </template>
+        </li>
+      </ul>
+      <form
+        v-show="newTaskFieldsVisible"
+        @submit.prevent="addTask"
+        @reset.prevent="resetNewTaskFields"
+      >
+        <input
+          type="text"
+          v-model="newTaskTitle"
+          @keyup.esc="resetNewTaskFields"
+          ref="newTaskTitle"
+        />
+        <button type="cubmit">追加</button>
+        <button type="reset">キャンセル</button>
+      </form>
+      <button
+        type="button"
+        v-show="!newTaskFieldsVisible"
+        @click="showNewTaskFields"
+        ref="taskAddBtn"
+      >
+        タスク追加
+      </button>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
